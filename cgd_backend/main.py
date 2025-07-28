@@ -1,35 +1,24 @@
-from fastapi import FastAPI, HTTPException
+from functools import lru_cache
+from fastapi import Depends, FastAPI, HTTPException
+from typing_extensions import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from dotenv import load_dotenv
 from openai import OpenAI
 from mistralai import Mistral
-import os
-
-load_dotenv()
-
-# Vérification de la configuration
-openai_api_key = os.getenv("OPENAI_API_KEY")
-if not openai_api_key:
-    raise Exception("OPENAI_API_KEY non trouvée dans le fichier .env")
-
-mistral_api_key = os.getenv("MISTRAL_API_KEY")
-if not mistral_api_key:
-    raise Exception("MISTRAL_API_KEY non trouvée dans le fichier .env")
-
+from . import config
 
 app = FastAPI()
-client_openai = OpenAI(api_key=openai_api_key)
-client_mistral = Mistral(api_key=mistral_api_key)
+
+
+@lru_cache
+def get_settings():
+    return config.Settings()
+
 
 # Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:8080",
-        "https://cgd-svelte.onrender.com",
-    ],
+    allow_origins=config.Settings().allow_origin,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,10 +30,13 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chatOpenAI")
-async def chat(request: ChatRequest):
+async def chat(
+    request: ChatRequest, settings: Annotated[config.Settings, Depends(get_settings)]
+):
     if not request.prompt:
         raise HTTPException(status_code=400, detail="Le prompt ne peut pas être vide")
 
+    client_openai = OpenAI(api_key=settings.openai_api_key)
     try:
         response = client_openai.chat.completions.create(
             model="gpt-3.5-turbo",  # Utilisation du modèle stable
@@ -60,11 +52,15 @@ async def chat(request: ChatRequest):
 
 
 @app.post("/chatMistral")
-async def chat(request: ChatRequest):
+async def chat(
+    request: ChatRequest, settings: Annotated[config.Settings, Depends(get_settings)]
+):
     if not request.prompt:
         raise HTTPException(status_code=400, detail="Le prompt ne peut pas être vide")
 
+    client_mistral = Mistral(api_key=settings.mistral_api_key)
     try:
+        print("coucou chat mistal")
         # Envoi d'une requête de complétion de chat au modèle spécifié
         # model="mistral-tiny", ou "mistral-small" ou "mistral-medium" ou "mistral-large-latest"
         response = client_mistral.chat.complete(
@@ -76,6 +72,7 @@ async def chat(request: ChatRequest):
         """ return {"response": "Réponse de test Mistral"} """
         """ return {"response": response.choices[0].message.content} """
         print("request = ", request)
+        """ print("settings.mistral_api_key = ", settings.mistral_api_key) """
         return {"response": "coucou de l'API Mistral !!"}
 
     except Exception as e:
