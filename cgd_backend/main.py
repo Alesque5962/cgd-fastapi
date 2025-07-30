@@ -1,10 +1,17 @@
 from functools import lru_cache
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Form, File, UploadFile, Request
+from fastapi.responses import JSONResponse
 from typing_extensions import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 from mistralai import Mistral
+import whisper
+from transformers import pipeline
+import tempfile
+import numpy as np
+import aiofiles
+import os
 from . import config
 
 app = FastAPI()
@@ -78,6 +85,47 @@ async def chat(
     except Exception as e:
         print(f"Erreur Mistral AI: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/whisper")
+async def speechToText(audioFile: UploadFile | None = None):
+    if not audioFile:
+        return {"message": "No upload audioFile sent"}
+    else:
+        try:
+            print("coucou de l'API Whisper")
+            thisdir = os.path.abspath(os.path.dirname(__file__))
+            outFilePath = os.path.join(thisdir, "whisper_mp3", audioFile.filename)
+            # Si le dossier n'existe pas, on le crée
+            os.makedirs(os.path.dirname(outFilePath), exist_ok=True)
+            # On supprime le fichier s'il existe déjà
+            if os.path.exists(outFilePath):
+                os.remove(outFilePath)
+
+            """ contents = audioFile.file.read()
+            with open(outFilePath, "wb") as f:
+                f.write(contents) """
+
+            with open(outFilePath, "wb") as f:
+                while contents := audioFile.file.read(1024 * 1024):
+                    f.write(contents)
+
+            print("outFilePath = ", outFilePath)
+
+            # Utilisation de Hugging face pour la transcription
+            """ transcriber = pipeline(
+                "automatic-speech-recognition", model="openai/whisper-small"
+            )
+            result = transcriber(outFilePath) """
+            # Utilisation de Whisper pour la transcription
+            model = whisper.load_model("small")
+            result = model.transcribe(outFilePath, language="fr")
+
+            return {"response": result["text"]}
+
+        except Exception as e:
+            print(f"Erreur Whisper: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/health")
