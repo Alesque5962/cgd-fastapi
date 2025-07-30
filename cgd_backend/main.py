@@ -1,16 +1,10 @@
 from functools import lru_cache
-from fastapi import Depends, FastAPI, HTTPException, Form, File, UploadFile, Request
-from fastapi.responses import JSONResponse
+from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from typing_extensions import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
-from mistralai import Mistral
 import whisper
-from transformers import pipeline
-import tempfile
-import numpy as np
-import aiofiles
 import os
 from . import config
 
@@ -118,7 +112,8 @@ async def speechToText(audioFile: UploadFile | None = None):
             )
             result = transcriber(outFilePath) """
             # Utilisation de Whisper pour la transcription
-            model = whisper.load_model("small")
+            """ model = whisper.load_model("small") """
+            model = whisper.load_model("base")
             result = model.transcribe(outFilePath, language="fr")
 
             return {"response": result["text"]}

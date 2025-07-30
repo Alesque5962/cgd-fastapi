@@ -7,7 +7,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
-dependencies = ["fastapi (>=0.115.12,<0.116.0)", "uvicorn (>=0.34.2,<0.35.0)", "python-dotenv (>=1.1.0,<2.0.0)", "openai (>=1.77.0,<2.0.0)", "mistralai (>=1.7.0,<2.0.0)", "pydantic-settings (>=2.10.1,<3.0.0)", "python-multipart (>=0.0.20,<0.0.21)", "openai-whisper (>=20250625,<20250626)", "bitstring (>=4.3.1,<5.0.0)", "aiofiles (>=24.1.0,<25.0.0)", "ffmpeg (>=1.4,<2.0)", "torch (>=2.7.1,<3.0.0)", "torchaudio (>=2.7.1,<3.0.0)", "transformers (>=4.54.1,<5.0.0)", "accelerate (>=1.9.0,<2.0.0)", "mistral-common[audio] (>=1.8.3,<2.0.0)"]
+dependencies = ["fastapi (>=0.115.12,<0.116.0)", "uvicorn (>=0.34.2,<0.35.0)", "openai (>=1.77.0,<2.0.0)", "pydantic-settings (>=2.10.1,<3.0.0)", "python-multipart (>=0.0.20,<0.0.21)", "openai-whisper (>=20250625,<20250626)", "mistral-common[audio] (>=1.8.3,<2.0.0)"]
 
 [tool.poetry]
 packages = [{include = "cgd_backend"}]
