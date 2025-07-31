@@ -9,3 +9,6 @@ __pycache__
 .env
 *.env
 *.log
+cgd_backend/__pycache__
+cgd_backend/whisper_mp3
+.python-version
