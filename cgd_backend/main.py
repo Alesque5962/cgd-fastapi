@@ -114,8 +114,7 @@ async def speechToText(audioFile: UploadFile | None = None):
             )
             result = transcriber(outFilePath) """
             # Utilisation de Whisper pour la transcription
-            """ model = whisper.load_model("small") """
-            model = whisper.load_model("tiny")
+            model = whisper.load_model("small")
             result = model.transcribe(outFilePath, language="fr")
 
             return {"response": result["text"]}
