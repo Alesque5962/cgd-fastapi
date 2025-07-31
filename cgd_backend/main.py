@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from mistralai import Mistral
 import whisper
+import uvicorn
 import os
 from . import config
 
@@ -127,3 +128,8 @@ async def speechToText(audioFile: UploadFile | None = None):
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+
+# This is important for Vercel
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
