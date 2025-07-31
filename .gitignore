@@ -3,5 +3,3 @@ cgd_backend/__pycache__
 whisper_mp3
 .env
 .python-version
-pyproject.toml
-poetry.lock
