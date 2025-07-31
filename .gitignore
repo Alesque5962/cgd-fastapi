@@ -1,4 +1,6 @@
 __pycache__
-.python-version
-.env
+cgd_backend/__pycache__
 whisper_mp3
+.env
+.python-version
+requirements.txt
