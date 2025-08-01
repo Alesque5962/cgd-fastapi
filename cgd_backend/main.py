@@ -34,7 +34,7 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chatOpenAI")
-async def chat(
+async def chatOpenAI(
     request: ChatRequest, settings: Annotated[config.Settings, Depends(get_settings)]
 ):
     if not request.prompt:
@@ -61,7 +61,7 @@ async def chat(
 
 
 @app.post("/chatMistral")
-async def chat(
+async def chatMistral(
     request: ChatRequest, settings: Annotated[config.Settings, Depends(get_settings)]
 ):
     if not request.prompt:
@@ -81,7 +81,7 @@ async def chat(
         return {"response": response.choices[0].message.content} """
 
         print("request = ", request)
-        return {"response": "coucou de l'API Mistral !!"}
+        return {"response": "coucou de l'API Chat Mistral !!"}
 
     except Exception as e:
         print(f"Erreur Mistral AI: {str(e)}")
@@ -89,7 +89,7 @@ async def chat(
 
 
 @app.post("/whisper")
-async def speechToText(
+async def speechToTextWhisper(
     settings: Annotated[config.Settings, Depends(get_settings)],
     audioFile: UploadFile | None = None,
 ):
@@ -135,7 +135,7 @@ async def speechToText(
 
 
 @app.post("/voxtral")
-async def speechToText(
+async def speechToTextVoxtral(
     settings: Annotated[config.Settings, Depends(get_settings)],
     audioFile: UploadFile | None = None,
 ):
@@ -145,14 +145,34 @@ async def speechToText(
         try:
             print("requête envoyée à l'API Voxtral")
 
-            """ client_whisper = OpenAI(api_key=settings.whisper_api_key)
-            transcript = client_whisper.audio.transcriptions.create(
-                model="whisper-1",
-                file=audioFile.file,
-                response_format="text",
-                language="fr",
-            )
-            return {"response": transcript} """
+            """ thisdir = os.path.abspath(os.path.dirname(__file__))
+            mp3FilePath = os.path.join(thisdir, "mp3_folder", audioFile.filename)
+            # Si le dossier n'existe pas, on le crée
+            os.makedirs(os.path.dirname(mp3FilePath), exist_ok=True)
+            # On supprime le fichier s'il existe déjà
+            if os.path.exists(mp3FilePath):
+                os.remove(mp3FilePath)
+
+            with open(mp3FilePath, "wb") as f:
+                while contents := audioFile.file.read(1024 * 1024):
+                    f.write(contents)
+
+            print("mp3FilePath = ", mp3FilePath)
+
+            client_mistral = Mistral(api_key=settings.mistral_api_key)
+            # Get the transcription
+            with open(mp3FilePath, "rb") as f:
+                transcription = client_mistral.audio.transcriptions.complete(
+                    model="voxtral-mini-latest",
+                    file={
+                        "content": f,
+                        "file_name": audioFile.filename,
+                    },
+                    language="fr",
+                )
+
+            print(transcription.text)
+            return {"response": transcription.text} """
 
             return {"response": "coucou de l'API Voxtral !!"}
 
