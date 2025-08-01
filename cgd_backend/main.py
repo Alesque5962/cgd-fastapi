@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 from mistralai import Mistral
-import whisper
+
+""" import whisper """
 import uvicorn
 import os
 from . import config
@@ -41,13 +42,18 @@ async def chat(
 
     client_openai = OpenAI(api_key=settings.openai_api_key)
     try:
-        response = client_openai.chat.completions.create(
+        print("requête envoyée à l'API OpenAI")
+        """ response = client_openai.chat.completions.create(
+            # model à tester ="gpt-4o-mini", "gpt-4.1"
             model="gpt-3.5-turbo",  # Utilisation du modèle stable
             messages=[{"role": "user", "content": request.prompt}],
             temperature=0.7,
             max_tokens=1000,
-        )
-        return {"response": response.choices[0].message.content}
+        ) """
+        # Affichage de la réponse générée par le modèle
+        """ return {"response": response.choices[0].message.content} """
+        print("request = ", request)
+        return {"response": "coucou de l'API OpenAI !!"}
 
     except Exception as e:
         print(f"Erreur OpenAI: {str(e)}")
@@ -63,19 +69,18 @@ async def chat(
 
     client_mistral = Mistral(api_key=settings.mistral_api_key)
     try:
-        print("coucou chat mistal")
-        # Envoi d'une requête de complétion de chat au modèle spécifié
+        print("requête envoyée à l'API Mistral AI")
+
+        """ # Envoi d'une requête de complétion de chat au modèle spécifié
         # model="mistral-tiny", ou "mistral-small" ou "mistral-medium" ou "mistral-large-latest"
         response = client_mistral.chat.complete(
             model="mistral-small",  # Spécification du modèle à utiliser
             messages=[{"role": "user", "content": request.prompt}],
         )
-
         # Affichage de la réponse générée par le modèle
-        """ return {"response": "Réponse de test Mistral"} """
-        """ return {"response": response.choices[0].message.content} """
+        return {"response": response.choices[0].message.content} """
+
         print("request = ", request)
-        """ print("settings.mistral_api_key = ", settings.mistral_api_key) """
         return {"response": "coucou de l'API Mistral !!"}
 
     except Exception as e:
@@ -84,13 +89,15 @@ async def chat(
 
 
 @app.post("/whisper")
-async def speechToText(audioFile: UploadFile | None = None):
+async def speechToText(
+    settings: Annotated[config.Settings, Depends(get_settings)],
+    audioFile: UploadFile | None = None,
+):
     if not audioFile:
         return {"message": "No upload audioFile sent"}
     else:
         try:
-            print("coucou de l'API Whisper")
-            thisdir = os.path.abspath(os.path.dirname(__file__))
+            """thisdir = os.path.abspath(os.path.dirname(__file__))
             outFilePath = os.path.join(thisdir, "whisper_mp3", audioFile.filename)
             # Si le dossier n'existe pas, on le crée
             os.makedirs(os.path.dirname(outFilePath), exist_ok=True)
@@ -98,26 +105,56 @@ async def speechToText(audioFile: UploadFile | None = None):
             if os.path.exists(outFilePath):
                 os.remove(outFilePath)
 
-            """ contents = audioFile.file.read()
-            with open(outFilePath, "wb") as f:
-                f.write(contents) """
-
             with open(outFilePath, "wb") as f:
                 while contents := audioFile.file.read(1024 * 1024):
                     f.write(contents)
 
             print("outFilePath = ", outFilePath)
 
-            # Utilisation de Hugging face pour la transcription
-            """ transcriber = pipeline(
-                "automatic-speech-recognition", model="openai/whisper-small"
-            )
-            result = transcriber(outFilePath) """
             # Utilisation de Whisper pour la transcription
             model = whisper.load_model("small")
             result = model.transcribe(outFilePath, language="fr")
+            return {"response": result["text"]}"""
 
-            return {"response": result["text"]}
+            print("requête envoyée à l'API Whisper")
+
+            """ client_whisper = OpenAI(api_key=settings.whisper_api_key)
+            transcript = client_whisper.audio.transcriptions.create(
+                model="whisper-1",
+                file=audioFile.file,
+                response_format="text",
+                language="fr",
+            )
+            return {"response": transcript} """
+
+            return {"response": "coucou de l'API Whisper !!"}
+
+        except Exception as e:
+            print(f"Erreur Whisper: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/voxtral")
+async def speechToText(
+    settings: Annotated[config.Settings, Depends(get_settings)],
+    audioFile: UploadFile | None = None,
+):
+    if not audioFile:
+        return {"message": "No upload audioFile sent"}
+    else:
+        try:
+            print("requête envoyée à l'API Voxtral")
+
+            """ client_whisper = OpenAI(api_key=settings.whisper_api_key)
+            transcript = client_whisper.audio.transcriptions.create(
+                model="whisper-1",
+                file=audioFile.file,
+                response_format="text",
+                language="fr",
+            )
+            return {"response": transcript} """
+
+            return {"response": "coucou de l'API Voxtral !!"}
 
         except Exception as e:
             print(f"Erreur Whisper: {str(e)}")

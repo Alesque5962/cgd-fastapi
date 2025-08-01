@@ -29,7 +29,7 @@ ENV PYTHONUNBUFFERED=1 \
 # Installation de ffmpeg pour Whisper
 RUN apt-get -y update \
     && apt-get -y upgrade \
-    && apt-get install -y --no-install-recommends ffmpeg \
+    # && apt-get install -y --no-install-recommends ffmpeg \
     && apt-get clean
 
 # Copy dependencies from builder stage
