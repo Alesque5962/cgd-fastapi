@@ -4,8 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     openai_api_key: str
     mistral_api_key: str
-    allow_origin: str = "http://localhost:8080"
+    allow_origin: str = (
+        "http://localhost:8080"  # Default value, used in docker container
+    )
     whisper_api_key: str
-    render: str = "false"
+    render: str = "false"  # Default value, used in docker container
 
     model_config = SettingsConfigDict(env_file=".env")
