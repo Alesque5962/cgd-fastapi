@@ -8,6 +8,6 @@ class Settings(BaseSettings):
         "http://localhost:8080"  # Default value, used in docker container
     )
     whisper_api_key: str
-    render: str = "false"  # Default value, used in docker container
+    production: str = "false"
 
     model_config = SettingsConfigDict(env_file=".env")
