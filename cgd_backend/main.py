@@ -1,12 +1,11 @@
 from functools import lru_cache
+import logging
 from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from typing_extensions import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 from mistralai import Mistral
-
-""" import whisper """
 import uvicorn
 import os
 from . import config
@@ -18,6 +17,14 @@ app = FastAPI()
 def get_settings():
     return config.Settings()
 
+
+# Production mode or not
+isProd = config.Settings().production.lower()
+
+# Configure logging
+level = logging.WARNING if isProd == "true" else logging.DEBUG
+logging.basicConfig(level=level)
+logger = logging.getLogger(__name__)
 
 # Configuration CORS
 app.add_middleware(
@@ -38,30 +45,30 @@ async def chatOpenAI(
     request: ChatRequest, settings: Annotated[config.Settings, Depends(get_settings)]
 ):
     if not request.prompt:
-        raise HTTPException(status_code=400, detail="Le prompt ne peut pas être vide")
+        raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
     else:
         client_openai = OpenAI(api_key=settings.openai_api_key)
-        isRender = settings.render.lower()
-        if isRender == "true":
+        if isProd == "true":
             try:
-                print("requête envoyée à l'API OpenAI")
-                print("request = ", request)
                 response = client_openai.chat.completions.create(
-                    # model à tester ="gpt-4o-mini", "gpt-4.1"
-                    model="gpt-3.5-turbo",  # Utilisation du modèle stable
+                    # Availables models = "gpt-4o-mini", "gpt-4.1"
+                    model="gpt-3.5-turbo",
                     messages=[{"role": "user", "content": request.prompt}],
                     temperature=0.7,
                     max_tokens=1000,
                 )
-                # Affichage de la réponse générée par le modèle
                 return {"response": response.choices[0].message.content}
 
             except Exception as e:
-                print(f"Erreur OpenAI: {str(e)}")
+                logger.error(f"Erreur OpenAI: {str(e)}")
                 raise HTTPException(status_code=500, detail=str(e))
         else:
-            return {"response": "coucou de l'API Chat OpenAI !!"}
+            logger.info("request sent to OpenAI API")
+            logger.info(f"request = {request}")
+            return {
+                "response": "OpenAI Chat API is working but not connected in development mode"
+            }
 
 
 @app.post("/chatMistral")
@@ -69,30 +76,28 @@ async def chatMistral(
     request: ChatRequest, settings: Annotated[config.Settings, Depends(get_settings)]
 ):
     if not request.prompt:
-        raise HTTPException(status_code=400, detail="Le prompt ne peut pas être vide")
+        raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
     else:
         client_mistral = Mistral(api_key=settings.mistral_api_key)
-        isRender = settings.render.lower()
-        if isRender == "true":
+        if isProd == "true":
             try:
-                print("requête envoyée à l'API Mistral AI")
-                print("request = ", request)
-
-                # Envoi d'une requête de complétion de chat au modèle spécifié
-                # model="mistral-tiny", ou "mistral-small" ou "mistral-medium" ou "mistral-large-latest"
                 response = client_mistral.chat.complete(
-                    model="mistral-small",  # Spécification du modèle à utiliser
+                    # Availables models = "mistral-tiny", "mistral-small", "mistral-medium", "mistral-large-latest"
+                    model="mistral-small",
                     messages=[{"role": "user", "content": request.prompt}],
                 )
-                # Affichage de la réponse générée par le modèle
                 return {"response": response.choices[0].message.content}
 
             except Exception as e:
-                print(f"Erreur Mistral AI: {str(e)}")
+                logger.error(f"Erreur Mistral AI: {str(e)}")
                 raise HTTPException(status_code=500, detail=str(e))
         else:
-            return {"response": "coucou de l'API Chat Mistral !!"}
+            logger.info("request sent to Mistral AI API")
+            logger.info(f"request = {request}")
+            return {
+                "response": "Mistral Chat API is working but not connected in development mode"
+            }
 
 
 @app.post("/whisper")
@@ -101,32 +106,11 @@ async def speechToTextWhisper(
     audioFile: UploadFile | None = None,
 ):
     if not audioFile:
-        return {"message": "No upload audioFile sent"}
+        return {"message": "No uploaded audioFile"}
 
     else:
-        isRender = settings.render.lower()
-        if isRender == "true":
+        if isProd == "true":
             try:
-                """thisdir = os.path.abspath(os.path.dirname(__file__))
-                outFilePath = os.path.join(thisdir, "whisper_mp3", audioFile.filename)
-                # Si le dossier n'existe pas, on le crée
-                os.makedirs(os.path.dirname(outFilePath), exist_ok=True)
-                # On supprime le fichier s'il existe déjà
-                if os.path.exists(outFilePath):
-                    os.remove(outFilePath)
-
-                with open(outFilePath, "wb") as f:
-                    while contents := audioFile.file.read(1024 * 1024):
-                        f.write(contents)
-
-                print("outFilePath = ", outFilePath)
-
-                # Utilisation de Whisper pour la transcription
-                model = whisper.load_model("small")
-                result = model.transcribe(outFilePath, language="fr")
-                return {"response": result["text"]}"""
-
-                print("requête envoyée à l'API Whisper")
                 client_whisper = OpenAI(api_key=settings.whisper_api_key)
                 transcript = client_whisper.audio.transcriptions.create(
                     model="whisper-1",
@@ -137,10 +121,13 @@ async def speechToTextWhisper(
                 return {"response": transcript}
 
             except Exception as e:
-                print(f"Erreur Whisper: {str(e)}")
+                logger.error(f"Erreur Whisper: {str(e)}")
                 raise HTTPException(status_code=500, detail=str(e))
         else:
-            return {"response": "coucou de l'API Whisper !!"}
+            logger.info("request sent to OpenAI Whisper API")
+            return {
+                "response": "OpenAI Whisper API is working but not connected in development mode"
+            }
 
 
 @app.post("/voxtral")
@@ -151,16 +138,11 @@ async def speechToTextVoxtral(
     if not audioFile:
         return {"message": "No upload audioFile sent"}
     else:
-        isRender = settings.render.lower()
-        if isRender == "true":
+        if isProd == "true":
             try:
-                print("requête envoyée à l'API Voxtral")
-
                 thisdir = os.path.abspath(os.path.dirname(__file__))
                 mp3FilePath = os.path.join(thisdir, "mp3_folder", audioFile.filename)
-                # Si le dossier n'existe pas, on le crée
                 os.makedirs(os.path.dirname(mp3FilePath), exist_ok=True)
-                # On supprime le fichier s'il existe déjà
                 if os.path.exists(mp3FilePath):
                     os.remove(mp3FilePath)
 
@@ -168,11 +150,9 @@ async def speechToTextVoxtral(
                     while contents := audioFile.file.read(1024 * 1024):
                         f.write(contents)
 
-                print("mp3FilePath = ", mp3FilePath)
-
                 client_mistral = Mistral(api_key=settings.mistral_api_key)
-                # Get the transcription
                 with open(mp3FilePath, "rb") as f:
+                    # Get the transcription
                     transcription = client_mistral.audio.transcriptions.complete(
                         model="voxtral-mini-latest",
                         file={
@@ -181,16 +161,17 @@ async def speechToTextVoxtral(
                         },
                         language="fr",
                     )
-
-                print(transcription.text)
                 return {"response": transcription.text}
 
             except Exception as e:
-                print(f"Erreur Whisper: {str(e)}")
+                logger.error(f"Erreur Whisper: {str(e)}")
                 raise HTTPException(status_code=500, detail=str(e))
 
         else:
-            return {"response": "coucou de l'API Voxtral !!"}
+            logger.info("request sent to Voxtral API")
+            return {
+                "response": "Voxtral API is working but not connected in development mode"
+            }
 
 
 @app.get("/health")
