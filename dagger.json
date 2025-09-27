@@ -1,0 +1,8 @@
+{
+  "name": "cgd-backend",
+  "engineVersion": "v0.18.19",
+  "sdk": {
+    "source": "python"
+  },
+  "source": ".dagger"
+}
