@@ -1,38 +1,36 @@
 # Stage 1: Build Stage
 FROM python:3.12.8-slim AS builder
+
+# uv installation
+COPY --from=ghcr.io/astral-sh/uv:0.8.22 /uv /uvx /bin/
 WORKDIR /app
 
 # Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=2.1 \
-    POETRY_VIRTUALENVS_CREATE=false \
-    PATH="/root/.local/bin:$PATH"
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
 
-# Copy Poetry configuration files
-COPY pyproject.toml poetry.lock ./
+# Copy uv configuration files and project
+COPY pyproject.toml uv.lock README.md ./
 COPY cgd_backend ./cgd_backend/
 
-# Poetry installation
-RUN pip install poetry --no-cache
-
 # Dependancies installation
-RUN poetry install --no-cache --no-root
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 # Stage 2: Production Stage
 FROM python:3.12.8-slim
-WORKDIR /app
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PATH="/root/.local/bin:$PATH"
+# Copy the application from the builder
+COPY --from=builder --chown=app:app /app /app
 
-# Copy dependencies from builder stage
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the rest of the files
 COPY . .
 
 EXPOSE 8000
 
-CMD ["poetry", "run", "uvicorn", "cgd_backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["fastapi", "run", "cgd_backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
