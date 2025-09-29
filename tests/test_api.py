@@ -1,27 +1,17 @@
-def func(x):
-    return x + 1
-
-
-def test_answer():
-    assert func(3) == 4
-
-
 from fastapi.testclient import TestClient
+import os
 import pytest
 from unittest.mock import Mock, patch
-import os
-
-thisdir = os.path.abspath(os.path.dirname(__file__))
-print(f"Current directory for tests: {thisdir}")
-from cgd_backend.main import app, logger
+from cgd_backend.main import app
 
 client = TestClient(app)
+""" os.environ["PRODUCTION"] = "true" """
 
 
 # Fixtures pour les mocks
 @pytest.fixture
 def mock_openai():
-    with patch("openai.OpenAI") as mock:
+    with patch("cgd_backend.main.OpenAI") as mock:
         # Mock de la réponse OpenAI
         mock_response = Mock()
         mock_response.choices = [Mock(message=Mock(content="Test response OpenAI"))]
@@ -32,7 +22,7 @@ def mock_openai():
 
 @pytest.fixture
 def mock_mistral():
-    with patch("mistralai.Mistral") as mock:
+    with patch("cgd_backend.main.Mistral") as mock:
         # Mock de la réponse Mistral
         mock_response = Mock()
         mock_response.choices = [Mock(message=Mock(content="Test response Mistral"))]
@@ -43,7 +33,7 @@ def mock_mistral():
 
 @pytest.fixture
 def mock_whisper():
-    with patch("openai.OpenAI") as mock:
+    with patch("cgd_backend.main.OpenAI") as mock:
         mock_instance = mock.return_value
         mock_instance.audio.transcriptions.create.return_value = (
             "Test transcription Whisper"
@@ -53,7 +43,7 @@ def mock_whisper():
 
 @pytest.fixture
 def mock_voxtral():
-    with patch("mistralai.Mistral") as mock:
+    with patch("cgd_backend.main.Mistral") as mock:
         mock_instance = mock.return_value
         mock_instance.audio.transcriptions.complete.return_value = Mock(
             text="Test transcription Voxtral"
