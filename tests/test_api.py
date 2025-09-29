@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 from cgd_backend.main import app
 
 client = TestClient(app)
-""" os.environ["PRODUCTION"] = "true" """
 
 
 # Fixtures for mocks
