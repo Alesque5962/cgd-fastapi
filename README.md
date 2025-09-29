@@ -9,15 +9,18 @@ Déploiement effectué sur Render, projet accessible [ici](https://cgd-svelte.on
 Lancement du projet en mode developement :
 ------------------------------------------
 
-Le gestionnaire de dépendances utilisé est Poetry => `backend/pyproject.toml`    
-`poetry run uvicorn cgd_backend.main:app`  
+Le gestionnaire de dépendances utilisé est uv => `backend/pyproject.toml`    
+`uv run uvicorn cgd_backend.main:app`  
 Se rendre à l'adresse localhost:8000 (serveur FastAPI).  
 
 Lancement des tests unitaires côté backend avec le framework Pytest :
 ----------------------------------------------------
 
-* Exécution de tous les tests  
+* Exécution de tous les tests unitaires  
 `pytest`  
+
+* Exécution d'un seul test unitaire  
+`pytest tests/test_api.py`
 
 Construction du projet :
 ------------------------

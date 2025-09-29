@@ -4,3 +4,4 @@ cgd_backend/mp3_folder
 .env
 .python-version
 .pytest_cache
+.venv
