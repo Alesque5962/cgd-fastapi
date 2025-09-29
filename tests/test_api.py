@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-import os
 import pytest
 from unittest.mock import Mock, patch
 from cgd_backend.main import app
@@ -8,11 +7,11 @@ client = TestClient(app)
 """ os.environ["PRODUCTION"] = "true" """
 
 
-# Fixtures pour les mocks
+# Fixtures for mocks
 @pytest.fixture
 def mock_openai():
     with patch("cgd_backend.main.OpenAI") as mock:
-        # Mock de la réponse OpenAI
+        # OpenAI response mock
         mock_response = Mock()
         mock_response.choices = [Mock(message=Mock(content="Test response OpenAI"))]
         mock_instance = mock.return_value
@@ -23,7 +22,7 @@ def mock_openai():
 @pytest.fixture
 def mock_mistral():
     with patch("cgd_backend.main.Mistral") as mock:
-        # Mock de la réponse Mistral
+        # Mistral response mock
         mock_response = Mock()
         mock_response.choices = [Mock(message=Mock(content="Test response Mistral"))]
         mock_instance = mock.return_value
@@ -53,13 +52,13 @@ def mock_voxtral():
 
 @pytest.fixture
 def audio_file():
-    # Créer un fichier audio temporaire pour les tests
+    # Fake audio file for testing
     content = b"fake audio content"
     filename = "test.mp3"
     return {"content": content, "filename": filename}
 
 
-# Tests des endpoints
+# Endpoints tests
 def test_chat_openai(mock_openai):
     response = client.post("/chatOpenAI", json={"prompt": "test question"})
     assert response.status_code == 200
@@ -86,7 +85,7 @@ def test_voxtral(mock_voxtral, audio_file):
     assert response.json() == {"response": "Test transcription Voxtral"}
 
 
-# Tests d'erreur
+# Errors tests
 def test_chat_openai_empty_prompt():
     response = client.post("/chatOpenAI", json={"prompt": ""})
     assert response.status_code == 400
