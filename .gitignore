@@ -5,3 +5,4 @@ cgd_backend/mp3_folder
 .python-version
 .pytest_cache
 .venv
+.ruff_cache
