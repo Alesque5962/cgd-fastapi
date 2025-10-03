@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Annotated
+import asyncio
 import dagger
 from dagger import DefaultPath, Doc, dag, function, object_type, Ignore
 
@@ -181,7 +182,5 @@ class CgdBackend:
             raise
 
 
-""" if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(dag.run(CgdBackend.docker_build_publish)) """
+if __name__ == "__main__":
+    asyncio.run(dag.run(CgdBackend.docker_build_publish))
