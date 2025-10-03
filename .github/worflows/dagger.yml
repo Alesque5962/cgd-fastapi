@@ -1,0 +1,56 @@
+name: CI/CD Pipeline cgd-backend
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      # - 'backend/**'
+      - ".github/workflows/dagger.yml"
+  pull_request:
+    branches:
+      - main
+      - develop
+    # paths:
+    #   - 'backend/**'
+
+jobs:
+  test-and-publish:
+    runs-on: ubuntu-latest
+    # defaults:
+    #   run:
+    #     working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Set up Dagger
+        uses: dagger/dagger-for-github@v5
+        with:
+          version: "0.9.3"
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[test]
+
+      - name: Test and publish backend
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          dagger run python .dagger/src/cgd_backend/ci.py
