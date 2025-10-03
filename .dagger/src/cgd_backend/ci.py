@@ -180,7 +180,3 @@ class CgdBackend:
         except Exception as e:
             logger.error(f"❌ Error during test environment build : {str(e)}")
             raise
-
-
-""" if __name__ == "__main__":
-    asyncio.run(dag.run(CgdBackend.docker_build_publish)) """
