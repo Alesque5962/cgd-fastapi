@@ -1,5 +1,5 @@
 # Stage 1: Build Stage
-FROM python:3.13-slim AS builder
+FROM python:3.12.8-slim AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system -e .
 
 # Stage 2: Production Stage
-FROM python:3.13-slim
+FROM python:3.12.8-slim
 
 WORKDIR /app
 

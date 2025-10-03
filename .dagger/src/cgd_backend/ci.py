@@ -80,7 +80,7 @@ class CgdBackend:
         # Stage 1: Build stage
         builder = (
             dag.container()
-            .from_("python:3.13-slim")
+            .from_("python:3.12.8-slim")
             .with_workdir("/app")
             .with_exec(["pip", "install", "uv"])
             # Copy uv configuration files
@@ -95,7 +95,7 @@ class CgdBackend:
         # Stage 2: Production stage
         container = (
             dag.container()
-            .from_("python:3.13-slim")
+            .from_("python:3.12.8-slim")
             .with_workdir("/app")
             # Copy application from builder
             .with_directory("/app/cgd_backend", builder.directory("/app/cgd_backend"))
@@ -170,7 +170,7 @@ class CgdBackend:
         try:
             return await (
                 dag.container()
-                .from_("python:3.12-slim")
+                .from_("python:3.12.8-slim")
                 .with_workdir("/app")
                 .with_directory("/app", source)
                 .with_exec(["pip", "install", "uv"])
@@ -179,3 +179,9 @@ class CgdBackend:
         except Exception as e:
             logger.error(f"❌ Error during test environment build : {str(e)}")
             raise
+
+
+""" if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(dag.run(CgdBackend.docker_build_publish)) """
