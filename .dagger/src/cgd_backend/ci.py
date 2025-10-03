@@ -80,7 +80,7 @@ class CgdBackend:
         # Stage 1: Build stage
         builder = (
             dag.container()
-            .from_("python:3.12.8-slim")
+            .from_("python:3.13-slim")
             .with_workdir("/app")
             .with_exec(["pip", "install", "uv"])
             # Copy uv configuration files
@@ -95,7 +95,7 @@ class CgdBackend:
         # Stage 2: Production stage
         container = (
             dag.container()
-            .from_("python:3.12.8-slim")
+            .from_("python:3.13-slim")
             .with_workdir("/app")
             # Copy application from builder
             .with_directory("/app/cgd_backend", builder.directory("/app/cgd_backend"))
