@@ -9,5 +9,7 @@ class Settings(BaseSettings):
     )
     whisper_api_key: str
     production: str = "false"
+    docker_username: str = ""
+    docker_password: str = ""
 
     model_config = SettingsConfigDict(env_file=".env")
