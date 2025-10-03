@@ -3,18 +3,18 @@
 Description :
 -------------
 
-Backend permettant à un utilisateur de poser une question, écrite ou vocale, à l'API Mistral (Chat ou Voxtral)  
-Déploiement effectué sur Render, projet accessible [ici](https://cgd-svelte.onrender.com)  
+Backend permettant à un utilisateur de poser une question, écrite ou vocale, à l'API Mistral (Chat ou Voxtral).  
+Déploiement de l'application complète effectué sur Render, projet accessible [ici](https://cgd-svelte.onrender.com)  
 
-Lancement du projet en mode developement :
-------------------------------------------
+Lancement du projet en mode développement :
+-------------------------------------------
 
-Le gestionnaire de dépendances utilisé est uv => `backend/pyproject.toml`    
+Le gestionnaire de dépendances utilisé est uv => `pyproject.toml`    
 `uv run uvicorn cgd_backend.main:app`  
 Se rendre à l'adresse localhost:8000 (serveur FastAPI).  
 
 Lancement des tests unitaires côté backend avec le framework Pytest :
-----------------------------------------------------
+---------------------------------------------------------------------
 
 * Exécution de tous les tests unitaires  
 `uv run --env-file .env.testing pytest`  
@@ -22,9 +22,17 @@ Lancement des tests unitaires côté backend avec le framework Pytest :
 * Exécution d'un seul test unitaire  
 `uv run --env-file .env.testing pytest tests/test_api.py`  
 
-Construction du projet :
-------------------------
+Pipeline CI/CD :
+----------------
 
-Utilisation de Dagger pour gérer CI/CD  
-Lancer les tests avec pytest => Builder une image docker => Push sur Dockerhub => Image utilisable avec docker-compose  
+Utilisation de Dagger.  
 
+* Exécution du pipeline complet  
+`dagger call docker-build-publish`  
+Lance les tests avec pytest, build une image docker, push sur Dockerhub.  
+
+Construction de l'application complète (frontend + backend) localement :
+---------------------------------------------------
+
+`docker compose up -d`
+Se rendre à l'adresse localhost:8080 (serveur Nginx).  
