@@ -33,9 +33,9 @@ jobs:
           cache: "pip"
 
       - name: Set up Dagger
-        uses: dagger/dagger-for-github@v5
+        uses: dagger/dagger-for-github@v8.2.0
         with:
-          version: "0.9.3"
+          version: "latest"
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
