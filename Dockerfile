@@ -1,36 +1,40 @@
 # Stage 1: Build Stage
-FROM python:3.12.8-slim AS builder
+FROM python:3.13-slim AS builder
 
-# uv installation
-COPY --from=ghcr.io/astral-sh/uv:0.8.22 /uv /uvx /bin/
 WORKDIR /app
 
-# Set environment variables
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
+# uv installation
+RUN pip install uv
 
-# Copy uv configuration files and project
+# Copy uv project and configuration files
 COPY pyproject.toml uv.lock README.md ./
 COPY cgd_backend ./cgd_backend/
 
 # Dependancies installation
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+    uv pip install --system -e .
 
 # Stage 2: Production Stage
-FROM python:3.12.8-slim
+FROM python:3.13-slim
 
-# Copy the application from the builder
-COPY --from=builder --chown=app:app /app /app
+WORKDIR /app
 
-# Place executables in the environment at the front of the path
-ENV PATH="/app/.venv/bin:$PATH"
+# Copy application from builder
+COPY --from=builder /app/cgd_backend ./cgd_backend
+# Copie system dependancies from builder
+COPY --from=builder /usr/local /usr/local
 
-# Copy the rest of the files
-COPY . .
+# Configuration
+ENV PYTHONPATH=/app
+ENV PRODUCTION=true
+
+# Création d'un utilisateur non-root
+RUN groupadd -r app && \
+    useradd -r -g app app && \
+    chown -R app:app /app
+
+USER app
 
 EXPOSE 8000
 
-CMD ["fastapi", "run", "cgd_backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "cgd_backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
