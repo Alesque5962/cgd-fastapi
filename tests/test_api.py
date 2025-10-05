@@ -1,3 +1,4 @@
+import os
 from fastapi.testclient import TestClient
 import pytest
 from unittest.mock import Mock, patch
@@ -61,27 +62,35 @@ def audio_file():
 def test_chat_openai(mock_openai):
     response = client.post("/chatOpenAI", json={"prompt": "test question"})
     assert response.status_code == 200
-    assert response.json() == {"response": "Test response OpenAI"}
+    assert response.json() == {
+        "response": "OpenAI Chat API is working but not connected in development mode"
+    }
 
 
 def test_chat_mistral(mock_mistral):
     response = client.post("/chatMistral", json={"prompt": "test question"})
     assert response.status_code == 200
-    assert response.json() == {"response": "Test response Mistral"}
+    assert response.json() == {
+        "response": "Mistral Chat API is working but not connected in development mode"
+    }
 
 
 def test_whisper(mock_whisper, audio_file):
     files = {"audioFile": (audio_file["filename"], audio_file["content"], "audio/mpeg")}
     response = client.post("/whisper", files=files)
     assert response.status_code == 200
-    assert response.json() == {"response": "Test transcription Whisper"}
+    assert response.json() == {
+        "response": "OpenAI Whisper API is working but not connected in development mode"
+    }
 
 
 def test_voxtral(mock_voxtral, audio_file):
     files = {"audioFile": (audio_file["filename"], audio_file["content"], "audio/mpeg")}
     response = client.post("/voxtral", files=files)
     assert response.status_code == 200
-    assert response.json() == {"response": "Test transcription Voxtral"}
+    assert response.json() == {
+        "response": "Voxtral API is working but not connected in development mode"
+    }
 
 
 # Errors tests

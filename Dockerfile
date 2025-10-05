@@ -26,7 +26,6 @@ COPY --from=builder /usr/local /usr/local
 
 # Configuration
 ENV PYTHONPATH=/app
-ENV PRODUCTION=true
 
 # Création d'un utilisateur non-root
 RUN groupadd -r app && \

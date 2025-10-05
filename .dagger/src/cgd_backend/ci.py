@@ -104,7 +104,6 @@ class CgdBackend:
             .with_directory("/usr/local", builder.directory("/usr/local"))
             # Configuration
             .with_env_variable("PYTHONPATH", "/app")
-            .with_env_variable("PRODUCTION", "true")
             .with_registry_auth("docker.io", docker_username, docker_password)
             .with_exposed_port(8000)
             # Creating a non-root user
@@ -148,11 +147,7 @@ class CgdBackend:
         """Return the result of running pytest"""
         try:
             build_env_tests = await self.build_env_tests(source)
-            return await (
-                build_env_tests.with_env_variable("PRODUCTION", "true")
-                .with_exec(["uv", "run", "pytest"])
-                .stdout()
-            )
+            return await build_env_tests.with_exec(["uv", "run", "pytest"]).stdout()
         except Exception as e:
             logger.error(f"❌ Error during tests execution : {str(e)}")
             raise

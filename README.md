@@ -17,10 +17,10 @@ Lancement des tests unitaires côté backend avec le framework Pytest :
 ---------------------------------------------------------------------
 
 * Exécution de tous les tests unitaires  
-`uv run --env-file .env.testing pytest`  
+`uv run pytest`  
 
 * Exécution d'un seul test unitaire  
-`uv run --env-file .env.testing pytest tests/test_api.py`  
+`uv run pytest tests/test_api.py`  
 
 Pipeline CI/CD :
 ----------------
