@@ -73,7 +73,7 @@ class CgdBackend:
         ],
     ) -> str:
         """Build and publish Docker image on DockerHub"""
-        self.run_tests(source)
+        await self.run_tests(source)
         docker_username, docker_password = await self.get_docker_credentials(source)
         if not docker_username or not docker_password:
             raise ValueError("Docker credentials cannot be missing")

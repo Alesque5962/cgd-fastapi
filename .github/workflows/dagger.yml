@@ -32,8 +32,10 @@ jobs:
           python-version: "3.12.8"
           cache: "pip"
 
-      - name: Install Dagger SDK
+      - name: Install Dagger SDK and CLI
         run: |
+          curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.19.0 sh
+          sudo mv bin/dagger /usr/local/bin
           pip install dagger-io>=0.19.0
 
       - name: Login to DockerHub
