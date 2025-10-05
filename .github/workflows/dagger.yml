@@ -52,4 +52,4 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          dagger run python .dagger/src/cgd_backend/ci.py
+          python .dagger/src/cgd_backend/ci.py
