@@ -5,15 +5,15 @@ on:
     branches:
       - main
       - develop
-    paths:
-      - "/**"
+      #paths:
+      #  - "/**"
       - ".github/workflows/dagger.yml"
   pull_request:
     branches:
       - main
       - develop
-    paths:
-      - "/**"
+    #paths:
+    #  - "/**"
 
 jobs:
   test-and-publish:
