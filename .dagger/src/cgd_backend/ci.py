@@ -36,7 +36,7 @@ class CgdBackend:
             ignored,
         ],
     ):
-        if "DOCKER_USERNAME" in os.environ and "DOCKER_PASSWORD" in os.environ:
+        if os.environ.get("DOCKER_USERNAME") and os.environ.get("DOCKER_PASSWORD"):
             docker_username = os.getenv("DOCKER_USERNAME")
             docker_password = os.getenv("DOCKER_PASSWORD")
         else:
