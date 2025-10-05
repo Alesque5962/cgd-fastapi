@@ -6,21 +6,21 @@ on:
       - main
       - develop
     paths:
-      # - 'backend/**'
+      - "/**"
       - ".github/workflows/dagger.yml"
   pull_request:
     branches:
       - main
       - develop
-    # paths:
-    #   - 'backend/**'
+    paths:
+      - "/**"
 
 jobs:
   test-and-publish:
     runs-on: ubuntu-latest
-    # defaults:
-    #   run:
-    #     working-directory: backend
+    defaults:
+      run:
+        working-directory: /**
 
     steps:
       - name: Checkout repository
