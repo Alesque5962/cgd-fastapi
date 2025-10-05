@@ -6,14 +6,14 @@ on:
       - main
       - develop
     paths:
-      - "/**"
+      #- "/**"
       - ".github/workflows/dagger.yml"
   pull_request:
     branches:
       - main
       - develop
-    paths:
-      - "/**"
+    #paths:
+    #  - "/**"
 
 jobs:
   test-and-publish:
@@ -21,9 +21,6 @@ jobs:
     defaults:
       run:
         working-directory: .
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -46,5 +43,8 @@ jobs:
           pip install -e .[test]
 
       - name: Test and publish backend
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           dagger call docker-build-publish
