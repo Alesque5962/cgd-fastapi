@@ -60,7 +60,7 @@ class CgdBackend:
                 logger.error(f"❌ Error reading .env file : {str(e)}")
                 raise
 
-        docker_password = dag.set_secret("docker_password", docker_password)
+        """ docker_password = dag.set_secret("docker_password", docker_password) """
         return docker_username, docker_password
 
     @function
