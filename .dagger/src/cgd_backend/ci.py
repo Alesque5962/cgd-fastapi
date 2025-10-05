@@ -36,11 +36,10 @@ class CgdBackend:
             ignored,
         ],
     ):
-        try:
+        if "DOCKER_USERNAME" in os.environ and "DOCKER_PASSWORD" in os.environ:
             docker_username = os.getenv("DOCKER_USERNAME")
             docker_password = os.getenv("DOCKER_PASSWORD")
-        except Exception as e:
-            logger.error(f"❌ Error reading Docker credentials from env : {str(e)}")
+        else:
             try:
                 # Reading .env file from source directory
                 env_content = await source.file(".env").contents()
@@ -60,7 +59,7 @@ class CgdBackend:
                 logger.error(f"❌ Error reading .env file : {str(e)}")
                 raise
 
-        """ docker_password = dag.set_secret("docker_password", docker_password) """
+        docker_password = dag.set_secret("docker_password", docker_password)
         return docker_username, docker_password
 
     @function
