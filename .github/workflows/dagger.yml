@@ -6,14 +6,14 @@ on:
       - main
       - develop
     paths:
-      - "/**"
+      #- "/**"
       - ".github/workflows/dagger.yml"
   pull_request:
     branches:
       - main
       - develop
-    paths:
-      - "/**"
+    #paths:
+    #  - "/**"
 
 jobs:
   test-and-publish:
@@ -36,6 +36,12 @@ jobs:
         uses: dagger/dagger-for-github@v8.2.0
         with:
           version: "latest"
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Install dependencies
         run: |
