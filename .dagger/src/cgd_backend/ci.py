@@ -183,4 +183,5 @@ class CgdBackend:
 
 
 if __name__ == "__main__":
-    asyncio.run(CgdBackend.docker_build_publish)
+    backend = CgdBackend()
+    asyncio.run(backend.docker_build_publish(dag.host().directory(".")))
