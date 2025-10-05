@@ -5,15 +5,15 @@ on:
     branches:
       - main
       - develop
-      #paths:
-      #  - "/**"
+    paths:
+      - "/**"
       - ".github/workflows/dagger.yml"
   pull_request:
     branches:
       - main
       - develop
-    #paths:
-    #  - "/**"
+    paths:
+      - "/**"
 
 jobs:
   test-and-publish:
@@ -54,4 +54,4 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          python .dagger/src/cgd_backend/ci.py
+          dagger call docker-build-publish
