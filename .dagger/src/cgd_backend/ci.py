@@ -148,7 +148,7 @@ class CgdBackend:
         """Return the result of running pytest"""
         try:
             return await (
-                self.build_env_tests(source)
+                await self.build_env_tests(source)
                 .with_env_variable("PRODUCTION", "true")
                 .with_exec(["uv", "run", "pytest"])
                 .stdout()
