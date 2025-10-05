@@ -27,6 +27,9 @@ Pipeline CI/CD :
 
 Utilisation de Dagger.  
 
+* Exécution des tests unitaires  
+`dagger call run_tests`  
+
 * Exécution du pipeline complet  
 `dagger call docker-build-publish`  
 Lance les tests avec pytest, build une image docker, push sur Dockerhub.  
