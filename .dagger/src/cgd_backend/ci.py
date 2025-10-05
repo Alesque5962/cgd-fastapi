@@ -182,5 +182,5 @@ class CgdBackend:
             raise
 
 
-""" if __name__ == "__main__":
-    asyncio.run(CgdBackend.docker_build_publish) """
+if __name__ == "__main__":
+    asyncio.run(CgdBackend.docker_build_publish)
