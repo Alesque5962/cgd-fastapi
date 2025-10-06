@@ -62,7 +62,6 @@ class CgdBackend:
                 logger.error(f"❌ Error reading .env file : {str(e)}")
                 raise
 
-        docker_password = dag.set_secret("docker_password", docker_password)
         return docker_username, docker_password
 
     @function
@@ -74,12 +73,16 @@ class CgdBackend:
             Doc("cgd-backend source directory"),
             ignored,
         ],
+        docker_username: str = "",
+        docker_password: str = "",
     ) -> str:
         """Build and publish Docker image on DockerHub"""
         await self.run_tests(source)
-        docker_username, docker_password = await self.get_docker_credentials(source)
-        if not docker_username or not docker_password:
-            raise ValueError("Docker credentials cannot be missing")
+        if docker_username == "" or docker_password == "":
+            docker_username, docker_password = await self.get_docker_credentials(source)
+            if docker_username == "" or docker_password == "":
+                raise ValueError("Docker credentials cannot be missing")
+        docker_password = dag.set_secret("docker_password", docker_password)
 
         # Stage 1: Build stage
         builder = (
