@@ -38,11 +38,8 @@ class CgdBackend:
     ):
         docker_username = os.environ.get("DOCKER_USERNAME")
         docker_password = os.environ.get("DOCKER_PASSWORD")
-        print("docker_username et dockerpassword = ", docker_username, docker_password)
 
         if docker_username is None or docker_password is None:
-            """docker_username = os.environ.get("DOCKER_USERNAME")
-            docker_password = os.environ.get("DOCKER_PASSWORD")"""
             try:
                 # Reading .env file from source directory
                 env_content = await source.file(".env").contents()
