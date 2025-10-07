@@ -132,8 +132,7 @@ class CgdBackend:
         )
 
         logger.info("📤 Publication on DockerHub...")
-        """ image_ref = f"{docker_username}/cgd-backend:latest" """
-        image_ref = "alesque29/cgd-backend:latest"
+        image_ref = f"{docker_username}/cgd-backend:latest"
         try:
             await container.publish(image_ref)
             return f"✅ Image successfully published : {image_ref}"
