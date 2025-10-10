@@ -128,7 +128,7 @@ class CgdBackend:
             )
         )
 
-        logger.info("📤 Publication on DockerHub...")
+        logger.info("🚀 Publication on DockerHub...")
         image_ref = f"{docker_username}/cgd-backend:latest"
         try:
             await container.publish(image_ref)
@@ -165,7 +165,7 @@ class CgdBackend:
             ignored,
         ],
     ) -> dagger.Container:
-        """Build a ready-to-use test environment"""
+        """Build a ready-to-use tests environment"""
         try:
             return await (
                 dag.container()
@@ -176,7 +176,7 @@ class CgdBackend:
                 .with_exec(["uv", "sync"])
             )
         except Exception as e:
-            logger.error(f"❌ Error during test environment build : {str(e)}")
+            logger.error(f"❌ Error during build environment tests : {str(e)}")
             raise
 
 
