@@ -91,6 +91,8 @@ class CgdBackend:
             .with_directory("/app", source)
             .with_file("/app/pyproject.toml", source.file("pyproject.toml"))
             .with_file("/app/uv.lock", source.file("uv.lock"))
+            # Copy .env file
+            .with_file("/app/.env", source.file(".env"))
             # Dependancies installation
             .with_mounted_cache("/root/.cache/uv", dag.cache_volume("uv-cache"))
             .with_exec(["uv", "pip", "install", "--system", "-e", "."])
@@ -105,6 +107,8 @@ class CgdBackend:
             .with_directory("/app/cgd_backend", builder.directory("/app/cgd_backend"))
             # Copie system dependancies from builder
             .with_directory("/usr/local", builder.directory("/usr/local"))
+            # Copy .env file from builder
+            .with_file("/app/.env", builder.file("/app/.env"))
             # Configuration
             .with_env_variable("PYTHONPATH", "/app")
             .with_registry_auth("docker.io", docker_username, docker_password)
