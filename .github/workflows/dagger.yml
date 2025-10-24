@@ -22,12 +22,6 @@ jobs:
 
       - name: Build and publish Docker image
         uses: dagger/dagger-for-github@v8.2.0
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
-          WHISPER_API_KEY: ${{ secrets.WHISPER_API_KEY }}
         with:
-          call: docker-build-publish --docker_username=${{ secrets.DOCKER_USERNAME }} --docker_password=${{ secrets.DOCKER_PASSWORD }}
+          call: docker-build-publish --docker_username=${{ secrets.DOCKER_USERNAME }} --docker_password=${{ secrets.DOCKER_PASSWORD }} --mistral_api_key=${{ secrets.MISTRAL_API_KEY }}
           version: "latest"

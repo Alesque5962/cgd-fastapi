@@ -27,7 +27,7 @@ ignored = (
 @object_type
 class CgdBackend:
     @function
-    async def get_docker_credentials(
+    async def get_credentials(
         self,
         source: Annotated[
             dagger.Directory,
@@ -38,8 +38,13 @@ class CgdBackend:
     ):
         docker_username = os.environ.get("DOCKER_USERNAME")
         docker_password = os.environ.get("DOCKER_PASSWORD")
+        mistral_api_key = os.environ.get("MISTRAL_API_KEY")
 
-        if docker_username is None or docker_password is None:
+        if (
+            docker_username is None
+            or docker_password is None
+            or mistral_api_key is None
+        ):
             try:
                 # Reading .env file from source directory
                 env_content = await source.file(".env").contents()
@@ -51,15 +56,16 @@ class CgdBackend:
                         key, value = line.split("=", 1)
                         env_vars[key.strip()] = value.strip().strip("\"'")
 
-                # Extracting Docker credentials
+                # Extracting credentials
                 docker_username = env_vars.get("DOCKER_USERNAME")
                 docker_password = env_vars.get("DOCKER_PASSWORD")
+                mistral_api_key = env_vars.get("MISTRAL_API_KEY")
 
             except Exception as e:
                 logger.error(f"❌ Error reading .env file : {str(e)}")
                 raise
 
-        return docker_username, docker_password
+        return docker_username, docker_password, mistral_api_key
 
     @function
     async def docker_build_publish(
@@ -72,11 +78,14 @@ class CgdBackend:
         ],
         docker_username: str = "",
         docker_password: str = "",
+        mistral_api_key: str = "",
     ) -> str:
         """Build and publish Docker image on DockerHub"""
         await self.run_tests(source)
         if docker_username == "" or docker_password == "":
-            docker_username, docker_password = await self.get_docker_credentials(source)
+            docker_username, docker_password, mistral_api_key = (
+                await self.get_credentials(source)
+            )
             if docker_username == "" or docker_password == "":
                 raise ValueError("Docker credentials cannot be missing")
         docker_password = dag.set_secret("docker_password", docker_password)
@@ -107,6 +116,8 @@ class CgdBackend:
             .with_directory("/usr/local", builder.directory("/usr/local"))
             # Configuration
             .with_env_variable("PYTHONPATH", "/app")
+            .with_env_variable("PRODUCTION", "true")
+            .with_env_variable("MISTRAL_API_KEY", mistral_api_key)
             .with_registry_auth("docker.io", docker_username, docker_password)
             .with_exposed_port(8000)
             # Creating a non-root user
