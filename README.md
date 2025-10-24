@@ -1,10 +1,10 @@
-# cgd-backend (C'est Grave Docteur)
+# CGD-Backend (C'est Grave Docteur)
 
 Description :
 -------------
 
-API backend permettant à un utilisateur de poser une question, écrite ou vocale, à l'API Mistral (Chat ou Voxtral).  
-Déploiement de l'application complète effectué sur Render, accessible [ici](https://cgd-svelte.onrender.com)  
+API Backend permettant à un utilisateur de poser une question, écrite ou vocale, à l'API Mistral (Chat ou Voxtral).  
+Déploiement de l'application complète effectué sur Render, accessible ici : [CGD](https://cgd-svelte.onrender.com)  
 
 Run le projet en mode développement :
 -------------------------------------
