@@ -29,5 +29,5 @@ jobs:
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           WHISPER_API_KEY: ${{ secrets.WHISPER_API_KEY }}
         with:
-          call: docker-build-publish
+          call: docker-build-publish --docker_username=${{ secrets.DOCKER_USERNAME }} --docker_password=${{ secrets.DOCKER_PASSWORD }}
           version: "latest"
