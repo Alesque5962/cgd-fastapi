@@ -10,6 +10,9 @@ RUN pip install uv
 COPY pyproject.toml uv.lock README.md ./
 COPY cgd_backend ./cgd_backend/
 
+# Copy .env file
+COPY .env ./
+
 # Dependancies installation
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system -e .
@@ -23,6 +26,8 @@ WORKDIR /app
 COPY --from=builder /app/cgd_backend ./cgd_backend
 # Copie system dependancies from builder
 COPY --from=builder /usr/local /usr/local
+# Copy .env file
+COPY --from=builder /app/.env ./
 
 # Configuration
 ENV PYTHONPATH=/app
