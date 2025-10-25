@@ -3,7 +3,7 @@
 Description :
 -------------
 
-API Backend permettant à un utilisateur de poser une question, écrite ou vocale, à l'API Mistral (Chat ou Voxtral).  
+API Backend permettant à un utilisateur de poser une question, écrite ou vocale, via l'API Mistral (LLM Le Chat ou Voxtral).  
 Déploiement de l'application complète effectué sur Render, accessible ici : [CGD](https://cgd-svelte.onrender.com)  
 
 Run le projet en mode développement :
