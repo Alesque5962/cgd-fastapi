@@ -82,12 +82,12 @@ class CgdBackend:
     ) -> str:
         """Build and publish Docker image on DockerHub"""
         await self.run_tests(source)
-        if docker_username == "" or docker_password == "":
+        if docker_username == "" or docker_password == "" or mistral_api_key == "":
             docker_username, docker_password, mistral_api_key = (
                 await self.get_credentials(source)
             )
-            if docker_username == "" or docker_password == "":
-                raise ValueError("Docker credentials cannot be missing")
+            if docker_username == "" or docker_password == "" or mistral_api_key == "":
+                raise ValueError("Credentials cannot be missing")
         docker_password = dag.set_secret("docker_password", docker_password)
 
         # Stage 1: Build stage
