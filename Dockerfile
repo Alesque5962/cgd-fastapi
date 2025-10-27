@@ -33,7 +33,7 @@ COPY --from=builder /app/.env ./
 ENV PYTHONPATH=/app
 ENV PRODUCTION=true
 
-# Création d'un utilisateur non-root
+# Add non-root user
 RUN groupadd -r app && \
     useradd -r -g app app && \
     chown -R app:app /app
